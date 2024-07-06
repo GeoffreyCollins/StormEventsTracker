@@ -1,8 +1,9 @@
 const {  MongoClient } = require('mongodb');
+require('dotenv').config();
 
 // Connection
 const url = process.env.MONGO_URI;
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true});
+const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Database and Collection
 const dbName = 'StormDB';
@@ -18,16 +19,21 @@ async function getWeatherData(state) {
 
         // Query
         const query = { STATE: state};
-
-        // Projection
-        const projection = { _id: 0, BEGIN_DATE_TIME: 1, EVENT_TYPE: 1, DAMAGE_PROPERTY: 1, INJURIES_DIRECT: 1, DEATHS_DIRECT: 1 };
-
-        // Sort
-        const sort = { BEGIN_DATE_TIME: 1 };
+        const options = {
+        projection: { _id: 0, BEGIN_DATE_TIME: 1, EVENT_TYPE: 1 },
+        };
+        
+        console.log(`Querying database with state: ${state}`);
 
         // Find documents
-        const cursor = collection.find(query).project(projection).sort(sort);
+        const cursor = collection.find(query, options);
         const results = await cursor.toArray();
+
+        if (results.length === 0) {
+            console.log('No documents found');
+        } else {
+            console.log(`Found ${results.length} documents`);
+        }
 
         return results;
     } catch (err) {

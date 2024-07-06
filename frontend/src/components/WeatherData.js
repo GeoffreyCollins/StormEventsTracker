@@ -1,56 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { fetchWeather } from '../weatherServices/weatherService';
-import { Line } from 'react-chartjs-2';
+import React, { useState } from 'react';
+import WeatherForm from './WeatherForm';
+import WeatherChart from './WeatherChart';
+import WeatherList from './WeatherList';
+import { fetchWeather } from '../services/weatherService';
 
-const WeatherData = ({ city }) => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+const WeatherData = () => {
+  const [data, setData] = useState([]);
+  const [hasData, setHasData] = useState(false);
 
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                const response = await fetchWeather(city);
-                setData(response);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-                setLoading(false);
-            }
-        };
-        
-        getData();
-    }, [city]);
-
-    if (loading) {
-        return <p>Loading...</p>
+  const handleFormSubmit = async (state) => {
+    try {
+      const weatherData = await fetchWeather(state);
+      setData(weatherData);
+      setHasData(true);
+    } catch (error) {
+      console.error('Error getting data:', error);
+      setHasData(false);
     }
+  };
 
-    if (!data.length) {
-        return <p>No data available for {city}</p>
-    }
-
-    const labels = data.map((item) => item.date);
-    const temps = data.map((item) => item.temperature);
-
-    const chartData = {
-        labels: labels,
-        datasets: [
-            {
-                label: 'Temperature',
-                data: temps,
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }
-        ]
-    };  
-
-    return (
-        <div>
-            <h2>Weather data for {city}</h2>
-            <Line data={chartData} />
-        </div>
-    );
+  return (
+    <div>
+      <WeatherForm onSubmit={handleFormSubmit} />
+      {hasData ? (
+        <>
+          <WeatherChart data={data} />
+          <WeatherList data={data} />
+        </>
+      ) : (
+        <p>Please enter a state to get the weather data.</p>
+      )}
+    </div>
+  );
 };
 
 export default WeatherData;
