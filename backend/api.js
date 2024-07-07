@@ -4,18 +4,20 @@ const { getWeatherDataByState } = require('./mongoService');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 
 app.use(cors());
 
 app.get('/weather', async (req, res) => {
-    const { state } = req.query;
+    const { state, year } = req.query;
+    console.log('Received state:', state); // Debugging line, shows the state in the console and terminal
+    console.log('Received year:', year); // Debugging line, shows the year in the console and terminal
     if (!state) {
         return res.status(400).send('State query parameter is required');
     }
     
     try {
-        const data = await getWeatherDataByState(state);
+        const data = await getWeatherDataByState(state, year);
         console.log('API Response Data: ', data); // Debugging line, shows the data in the console and terminal
         res.json(data);
     } catch (error) {
