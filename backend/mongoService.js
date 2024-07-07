@@ -1,47 +1,31 @@
-const {  MongoClient } = require('mongodb');
+const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-// Connection
-const url = process.env.MONGO_URI;
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Database and Collection
-const dbName = 'StormDB';
-const collectionName = 'Details';
-
-async function getWeatherData(state) {
-    try {
-        await client.connect();
-        console.log('Connected to the database');
-
-        const db = client.db(dbName);
-        const collection = db.collection(collectionName);
-
-        // Query
-        const query = { STATE: state};
-        const options = {
-        projection: { _id: 0, BEGIN_DATE_TIME: 1, EVENT_TYPE: 1 },
-        };
-        
-        console.log(`Querying database with state: ${state}`);
-
-        // Find documents
-        const cursor = collection.find(query, options);
-        const results = await cursor.toArray();
-
-        if (results.length === 0) {
-            console.log('No documents found');
-        } else {
-            console.log(`Found ${results.length} documents`);
-        }
-
-        return results;
-    } catch (err) {
-        console.error('Error:', err);
-        throw err;
-    } finally {
-        await client.close();
-    }
+const uri = process.env.MONGO_URI;
+if (!uri) {
+    throw new Error("MONGO_URI environment variable not defined");
 }
 
-module.exports = { getWeatherData };
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const getWeatherDataByState = async (state) => {
+    try {
+        await client.connect();
+        const database = client.db('StormDB');
+        const collection = database.collection('Details');
+        const pipeline = [
+            { $match: { STATE: state.toUpperCase() } }, // Data in the database is in uppercase, so we need to convert the state to uppercase
+            { $group: { _id: "$MONTH_NAME", eventCount: { $sum: 1 } } },
+            { $sort: { _id: 1 } }
+        ];
+        const result = await collection.aggregate(pipeline).toArray();
+        return result.map(item => ({ month: item._id, eventCount: item.eventCount }));
+    } catch (error) {
+        console.error('Error getting weather data: ', error);
+        return [];
+    } finally {
+        await client.close(); // Close the connection to the database
+    }
+};
+
+module.exports = { getWeatherDataByState };

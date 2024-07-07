@@ -1,37 +1,39 @@
 import React, { useState } from 'react';
-import WeatherForm from './WeatherForm';
+import axios from 'axios';
 import WeatherChart from './WeatherChart';
-import WeatherList from './WeatherList';
-import { fetchWeather } from '../services/weatherService';
 
 const WeatherData = () => {
-  const [data, setData] = useState([]);
-  const [hasData, setHasData] = useState(false);
+    const [state, setState] = useState(''); // State to store the user input
+    const [data, setData] = useState(null); // State to store the weather data
 
-  const handleFormSubmit = async (state) => {
-    try {
-      const weatherData = await fetchWeather(state);
-      setData(weatherData);
-      setHasData(true);
-    } catch (error) {
-      console.error('Error getting data:', error);
-      setHasData(false);
-    }
-  };
+    const fetchWeather = async () => { // Fetch weather data from the backend
+        try {
+            const response = await axios.get(`http://localhost:5001/weather?state=${state}`);
+            setData(response.data);
+        } catch (error) { 
+            console.error("Error fetching data: ", error);
+        }
+    };
 
-  return (
-    <div>
-      <WeatherForm onSubmit={handleFormSubmit} />
-      {hasData ? (
-        <>
-          <WeatherChart data={data} />
-          <WeatherList data={data} />
-        </>
-      ) : (
-        <p>Please enter a state to get the weather data.</p>
-      )}
-    </div>
-  );
+    const handleSubmit = (event) => { // Handle form submission
+        event.preventDefault();
+        fetchWeather();
+    };
+
+    return ( // Render the form and the WeatherChart component
+        <div>
+            <form onSubmit={handleSubmit}>
+                <input 
+                    type="text" 
+                    value={state} 
+                    onChange={(e) => setState(e.target.value)} 
+                    placeholder="Enter state"
+                />
+                <button type="submit">Get Weather Data</button>
+            </form>
+            {data && <WeatherChart data={data} />}
+        </div>
+    );
 };
 
 export default WeatherData;
