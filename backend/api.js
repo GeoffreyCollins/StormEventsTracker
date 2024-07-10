@@ -1,31 +1,45 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const { getWeatherDataByState } = require('./mongoService');
-require('dotenv').config();
+const StormEvent = require('./models/StormEvent');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
+app.use(express.json());
 
-app.get('/weather', async (req, res) => {
+console.log('Connecting to MongoDB...');
+mongoose.connect('mongodb://localhost:27017/NaturalDisasters', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log('Connected to MongoDB');
+}).catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+});
+
+app.get('/api/storm-events', async (req, res) => {
     const { state, year } = req.query;
-    console.log('Received state:', state); // Debugging line, shows the state in the console and terminal
-    console.log('Received year:', year); // Debugging line, shows the year in the console and terminal
-    if (!state) {
-        return res.status(400).send('State query parameter is required');
+    console.log('Received request with state:', state, 'and year:', year);
+
+    let query = { STATE: state };
+    if (year) {
+        query.YEAR = parseInt(year, 10);
     }
-    
+
+    console.log('Constructed query:', query);
+
     try {
-        const data = await getWeatherDataByState(state, year);
-        console.log('API Response Data: ', data); // Debugging line, shows the data in the console and terminal
-        res.json(data);
+        const events = await StormEvent.find(query);
+        console.log('Events found:', events.length);
+        res.json(events);
     } catch (error) {
-        console.error('Error in /weather route: ', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching events:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });

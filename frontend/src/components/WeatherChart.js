@@ -1,44 +1,69 @@
 import React, { useEffect, useRef } from 'react';
-import { Chart } from 'chart.js/auto';
+import Chart from 'chart.js/auto';
 
-const WeatherChart = ({ data }) => {
-    const chartRef = useRef(null); // Create a reference to the canvas element
-    const chartInstance = useRef(null); // Create a reference to the chart instance
+const WeatherChart = ({ events }) => {
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
 
-    useEffect(() => { // Use the useEffect hook to create the chart when the component mounts
-        if (chartInstance.current) {
-            chartInstance.current.destroy(); // Destroy the previous chart instance before creating a new one
-        }
+  useEffect(() => {
+    if (!events || events.length === 0) {
+      console.log("No events data available");
+      return;
+    }
 
-        const ctx = chartRef.current.getContext('2d'); // Get the canvas context (2D rendering context)
-        const chartData = {
-            labels: data.map(item => item.month),
-            datasets: [
-                {
-                    label: 'Event Count',
-                    data: data.map(item => item.eventCount),
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                },
-            ],
-        };
-        const options = { // Chart options
-            scales: {
-                y: {
-                    beginAtZero: true,
-                },
-            },
-        };
+    console.log("Events data received:", events);
 
-        chartInstance.current = new Chart(ctx, {
-            type: 'bar',
-            data: chartData,
-            options,
-        });
-    }, [data]);
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
 
-    return <canvas ref={chartRef} />;
+    // Group events by type and count occurrences
+    const eventTypeCounts = events.reduce((acc, event) => {
+      const eventType = event.EVENT_TYPE;
+      if (!acc[eventType]) {
+        acc[eventType] = 0;
+      }
+      acc[eventType] += 1;
+      return acc;
+    }, {});
+
+    console.log("Event Type Counts:", eventTypeCounts);
+
+    const labels = Object.keys(eventTypeCounts);
+    const data = Object.values(eventTypeCounts);
+
+    const ctx = chartRef.current.getContext('2d');
+    chartInstanceRef.current = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Number of Events',
+            data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, [events]);
+
+  return <canvas ref={chartRef}></canvas>;
 };
 
 export default WeatherChart;
