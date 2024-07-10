@@ -1,6 +1,6 @@
 import React from 'react';
 
-const WeatherList = ({ data }) => {
+const WeatherList = ({ data }) => { // Define WeatherList component
   return (
     <div>
       <h2>Weather Events</h2>

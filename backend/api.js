@@ -19,22 +19,22 @@ mongoose.connect('mongodb://localhost:27017/NaturalDisasters', {
     console.error('Error connecting to MongoDB:', error);
 });
 
-app.get('/api/storm-events', async (req, res) => {
-    const { state, year } = req.query;
-    console.log('Received request with state:', state, 'and year:', year);
+app.get('/api/storm-events', async (req, res) => { // GET /api/storm-events
+    const { state, year } = req.query; // Extract query parameters
+    console.log('Received request with state:', state, 'and year:', year); // Log query parameters
 
-    let query = { STATE: state };
+    let query = { STATE: state }; // Construct query object
     if (year) {
         query.YEAR = parseInt(year, 10);
     }
 
-    console.log('Constructed query:', query);
+    console.log('Constructed query:', query); // Log constructed query
 
-    try {
-        const events = await StormEvent.find(query);
+    try { // Fetch events from MongoDB
+        const events = await StormEvent.find(query); // Find events matching query
         console.log('Events found:', events.length);
-        res.json(events);
-    } catch (error) {
+        res.json(events); // Respond with events
+    } catch (error) { // Handle errors
         console.error('Error fetching events:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }

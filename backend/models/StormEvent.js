@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const stormEventSchema = new mongoose.Schema({
+const stormEventSchema = new mongoose.Schema({ // Define the StormEvent schema
     BEGIN_YEARMONTH: Number,
     BEGIN_DAY: Number,
     BEGIN_TIME: Number,
@@ -52,8 +52,8 @@ const stormEventSchema = new mongoose.Schema({
     EPISODE_NARRATIVE: String,
     EVENT_NARRATIVE: String,
     DATA_SOURCE: String,
-}, { collection: 'Details' });
+}, { collection: 'Details' }); // Specify the collection name
 
-const StormEvent = mongoose.model('StormEvent', stormEventSchema);
+const StormEvent = mongoose.model('StormEvent', stormEventSchema); // Create the StormEvent model
 
 module.exports = StormEvent;

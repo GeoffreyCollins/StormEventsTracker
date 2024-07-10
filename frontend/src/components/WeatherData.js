@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 
-const WeatherData = () => {
-    const { events } = useContext(AppContext);
+const WeatherData = () => { // Define WeatherData component
+    const { events } = useContext(AppContext); // Get events from AppContext
 
-    return (
+    return ( // Render the list of storm events
         <div>
             <h2>Storm Events</h2>
             <ul>

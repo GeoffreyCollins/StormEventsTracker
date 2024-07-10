@@ -1,12 +1,12 @@
 import React, { createContext, useState } from 'react';
 
-export const AppContext = createContext();
+export const AppContext = createContext(); // Create a new context
 
-export const AppProvider = ({ children }) => {
+export const AppProvider = ({ children }) => { // Define AppProvider component
     const [events, setEvents] = useState([]);
 
     return (
-        <AppContext.Provider value={{ events, setEvents }}>
+        <AppContext.Provider value={{ events, setEvents }}> {/* Provide the events state and setEvents function */}
             {children}
         </AppContext.Provider>
     );
