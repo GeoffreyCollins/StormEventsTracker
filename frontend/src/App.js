@@ -1,20 +1,27 @@
 import React from 'react';
-import { AppProvider } from './context/AppContext';
+import { EventProvider } from './context/EventContext';
+import { FatalityProvider } from './context/FatalityContext';
+import { LocationProvider } from './context/LocationContext';
 import WeatherForm from './components/WeatherForm';
+import EventTypeChart from './components/EventTypeChart';
 import WeatherChart from './components/WeatherChart';
-import WeatherData from './components/WeatherData';
+import FatalityChart from './components/FatalityChart';
 
-function App() { // Define App component
-    return (
-        <AppProvider>
-            <div className="App">
-                <h1>Storm Event Counter</h1> {/* Render the title */}
-                <WeatherForm /> {/* Render the form */}
-                <WeatherData /> {/* Render the data */}
-                <WeatherChart /> {/* Render the chart */}
-            </div>
-        </AppProvider>
-    );
+function App() {
+  return (
+    <EventProvider>
+      <FatalityProvider>
+        <LocationProvider>
+          <div className="App">
+            <WeatherForm />
+            <EventTypeChart />
+            <WeatherChart />
+            <FatalityChart />
+          </div>
+        </LocationProvider>
+      </FatalityProvider>
+    </EventProvider>
+  );
 }
 
 export default App;

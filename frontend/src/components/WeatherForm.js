@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import WeatherChart from './WeatherChart';
+import EventTypeChart from './EventTypeChart';
+import { EventContext } from '../context/EventContext';
 
-const WeatherForm = () => { // Define WeatherForm component
-  const [state, setState] = useState(''); // Initialize state and year as empty strings
-  const [year, setYear] = useState(''); // Initialize state and year as empty strings
-  const [events, setEvents] = useState([]); // Initialize events as an empty array
+const WeatherForm = () => {
+  const { setEvents } = useContext(EventContext);
+  const [state, setState] = useState('');
+  const [year, setYear] = useState('');
 
-  const handleSubmit = async (e) => { // Define the submit handler
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try { // Fetch weather events from the backend
-      const response = await axios.get(`http://localhost:3001/api/storm-events?state=${state.toUpperCase()}&year=${year}`); // Fetch weather events from the backend
-      setEvents(response.data); // Set the events state with the response data
+    try {
+      const eventsResponse = await axios.get(`http://localhost:3001/api/storm-events?state=${state.toUpperCase()}&year=${year}`);
+      setEvents(eventsResponse.data);
     } catch (error) {
       console.error('Error fetching weather events', error);
     }
   };
 
-  return ( // Render the form and WeatherChart component
+  return (
     <div>
       <form onSubmit={handleSubmit}>
         <label>
@@ -25,12 +27,13 @@ const WeatherForm = () => { // Define WeatherForm component
           <input type="text" value={state} onChange={(e) => setState(e.target.value)} required />
         </label>
         <label>
-          Year (Optional): 
+          Year (Optional):
           <input type="text" value={year} onChange={(e) => setYear(e.target.value)} />
         </label>
         <button type="submit">Get Storm Events</button>
       </form>
-      {events.length > 0 && <WeatherChart events={events} />}
+      <EventTypeChart />
+      <WeatherChart />
     </div>
   );
 };
