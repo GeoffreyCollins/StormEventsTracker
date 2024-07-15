@@ -1,5 +1,5 @@
 import React from 'react';
-import WeatherForm from './WeatherForm';
+import WeatherForm from '../WeatherForm';
 
 const DetailsPage = () => {
     return (

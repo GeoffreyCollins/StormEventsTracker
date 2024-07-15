@@ -3,9 +3,9 @@ import { EventProvider } from './context/EventContext';
 import { FatalityProvider } from './context/FatalityContext';
 import { LocationProvider } from './context/LocationContext';
 import WeatherForm from './components/WeatherForm';
-import EventTypeChart from './components/EventTypeChart';
-import WeatherChart from './components/WeatherChart';
-import FatalityChart from './components/FatalityChart';
+import EventTypeChart from './components/Charts/EventTypeChart';
+import WeatherChart from './components/Charts/WeatherChart';
+import FatalityChart from './components/Charts/FatalityChart';
 
 function App() {
   return (

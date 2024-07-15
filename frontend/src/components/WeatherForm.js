@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import WeatherChart from './WeatherChart';
-import EventTypeChart from './EventTypeChart';
+import WeatherChart from './Charts/WeatherChart';
+import EventTypeChart from './Charts/EventTypeChart';
 import { EventContext } from '../context/EventContext';
 
 const WeatherForm = () => {

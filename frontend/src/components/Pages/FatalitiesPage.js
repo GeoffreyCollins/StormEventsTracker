@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import FatalityChart from './FatalityChart';
-import { FatalityContext } from '../context/FatalityContext';
+import FatalityChart from '../Charts/FatalityChart';
+import { FatalityContext } from '../../context/FatalityContext';
 
 const FatalitiesPage = () => {
     const { fatalities, setFatalities } = useContext(FatalityContext);

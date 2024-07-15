@@ -1,6 +1,6 @@
 import React from 'react';
-import WeatherForm from './WeatherForm';
-import LocationList from './LocationList';
+import WeatherForm from '../WeatherForm';
+import LocationList from '../Lists/LocationList';
 
 const LocationsPage = () => {
     return (

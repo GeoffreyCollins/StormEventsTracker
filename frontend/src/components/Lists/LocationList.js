@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { LocationContext } from '../context/LocationContext';
+import { LocationContext } from '../../context/LocationContext';
 
 const LocationList = () => {
     const { locations } = useContext(LocationContext);

@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes as Switch} from 'react-router-dom';
 import Home from './components/Home';
-import DetailsPage from './components/DetailsPage';
-import FatalitiesPage from './components/FatalitiesPage';
-import LocationsPage from './components/LocationsPage';
+import DetailsPage from './components/Pages/DetailsPage';
+import FatalitiesPage from './components/Pages/FatalitiesPage';
+import LocationsPage from './components/Pages/LocationsPage';
 
 const Routes = () => {
     return (
