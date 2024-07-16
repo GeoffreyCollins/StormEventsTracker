@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes as Switch} from 'react-router-do
 import Home from './components/Home';
 import DetailsPage from './components/Pages/DetailsPage';
 import FatalitiesPage from './components/Pages/FatalitiesPage';
-import LocationsPage from './components/Pages/LocationsPage';
+import EventLocationsPage from './components/Pages/EventLocationsPage';
 
 const Routes = () => {
     return (
@@ -12,7 +12,7 @@ const Routes = () => {
                 <Route exact path="/" element={<Home />} />
                 <Route path="/details" element={<DetailsPage />} />
                 <Route path="/fatalities" element={<FatalitiesPage />} />
-                <Route path="/locations" element={<LocationsPage />} />
+                <Route path="/event-locations" element={<EventLocationsPage />} />
             </Switch>
         </Router>
     );

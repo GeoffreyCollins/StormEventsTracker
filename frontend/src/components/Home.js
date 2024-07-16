@@ -8,7 +8,7 @@ const Home = () => {
             <h1>Welcome to the Storm Events Tracker!</h1>
                 <button className='button' onClick={() => window.location.href='/details'}>Go to Details</button>
                 <button className='button' onClick={() => window.location.href='/fatalities'}>Go to Fatalities</button>
-                <button className='button' onClick={() => window.location.href='/locations'}>Go to Locations</button>
+                <button className='button' onClick={() => window.location.href='/event-locations'}>Go to Event Locations</button>
             </div>
         </div>
     );

@@ -11,6 +11,7 @@ app.use(express.json());
 StormEventSchema = require('./models/StormEvent');
 FatalitySchema = require('./models/Fatality');
 LocationSchema = require('./models/Location');
+EventLocationSchema = require('./models/EventLocation');
 
 console.log('Connecting to MongoDB...');
 mongoose.connect('mongodb://localhost:27017/NaturalDisasters', {
@@ -78,6 +79,31 @@ app.get('/api/fatalities', async (req, res) => {
         res.json(fatalities);
     } catch (error) {
         console.error('Error fetching fatalities:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/event-locations', async (req, res) => {
+    try {
+        const eventsPerCounty = await EventLocationSchema.aggregate([
+            {
+                $group: {
+                    _id: "$CZ_NAME",
+                    count: {$sum: 1}
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    CZ_NAME: "$_id",
+                    count: 1
+                }
+            }
+        ]);
+
+        res.json(eventsPerCounty);
+    } catch (error) {
+        console.error('Error fetching event locations:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

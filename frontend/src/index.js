@@ -5,7 +5,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { EventProvider } from './context/EventContext';
 import { FatalityProvider } from './context/FatalityContext';
-import { LocationProvider } from './context/LocationContext';
+import { EventLocationProvider } from './context/EventLocationContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -14,9 +14,9 @@ root.render(
   <React.StrictMode>
       <EventProvider>
         <FatalityProvider>
-          <LocationProvider>
+          <EventLocationProvider>
             <Routes />
-          </LocationProvider>
+          </EventLocationProvider>
         </FatalityProvider>
       </EventProvider>
   </React.StrictMode>,
