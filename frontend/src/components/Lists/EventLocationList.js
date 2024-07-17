@@ -1,17 +1,15 @@
-import React, { useContext } from 'react';
-import { EventLocationContext } from '../../context/EventLocationContext';
-
-const EventLocationList = () => {
-    const { eventLocations } = useContext(EventLocationContext);
+import React from 'react';
+const EventLocationList = ({ data }) => {
+    if (!data) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
             <h2>Locations</h2>
             <ul>
-                {eventLocations.map(eventLocation => (
-                    <li key={eventLocation._id}>
-                        {eventLocation.CZ_NAME} - {eventLocation.EVENT_TYPE}
-                    </li>
+                {data.map(eventLocation => (
+                    <div key={eventLocation.id}>{eventLocation.name}</div>
                 ))}
             </ul>
         </div>

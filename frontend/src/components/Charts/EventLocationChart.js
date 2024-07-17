@@ -1,63 +1,129 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import * as d3 from 'd3';
+import axios from 'axios';
+import L from 'leaflet';
+import '../../App.css';
 
-const EventLocationChart = () => {
-    const [geoJSON, setGeoJSON] = useState(null);
-    const [eventLocations, setEventLocations] = useState([]);
+const EventLocationChart = ({ year }) => {
+  const [geoData, setGeoData] = useState(null);
+  const [eventData, setEventData] = useState([]);
 
-    useEffect(() => {
-        fetch('http://localhost:3001/api/event-locations')
-            .then(response => response.json())
-            .then(data => setEventLocations(data))
-            .catch(error => console.error('Error fetching event locations', error));
+  useEffect(() => {
+    const fetchGeoData = async () => {
+      const response = await axios.get('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json');
+      setGeoData(response.data);
+    };
 
-            d3.json("https://storage.googleapis.com/kagglesdsdata/datasets/831691/1428241/us-states.json?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20240715%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20240715T234511Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=6f9effcbd37fdbc213231636e3121c88c4d8478e5eb6c6b39108e89e34944b4e662faa7a2374acbf32fe3daafd32d49c1db8d553bc14c9d4fc38b8e9ff982d93dc956210fa0b9cc13bef7d32739c4c68064e1f70c1e974e35cb2afa939611bfce4c355c841ec64c7585e09b2175fd3109f81a7b28b485d6c273903848b9a13d46fc412fe5161c111afadbc77ca2bca0c1d64b70778f40a990efd91e73a271c0d5bfb93eac50568780426fe38a28a9afaea8695fb530431ba35cb1b229c7b41e2131a02a3bbe3446d983af6622a60433c672489a4ee60dbe5e934ca0959d63f320080ded2f1d6237123522a17cd8e7a40f67588e68d695024a3839a2abd88d792")
-            .then(data => setGeoJSON(data))
-            .catch(error => console.error('Error fetching geoJSON data', error));
-    }, []);
+    const fetchEventData = async () => {
+      const response = await axios.get(`http://localhost:3001/api/event-locations?year=${year}`);
+      setEventData(response.data);
 
-    const mapColor = (d) => {
-        return  d > 1000 ?  '#800026' :
-                d > 500 ?   '#BD0026' :
-                d > 200 ?   '#E31A1C' :
-                d > 100 ?   '#FC4E2A' :
-                d > 50 ?    '#FD8D3C' :
-                d > 20 ?    '#FEB24C' :
-                d > 10 ?    '#FED976' :
-                            '#FFEDA0';
-        };
+    };
 
-        const style = (feature) => {
-            const state = feature.properties.name;
-            const eventLocation = eventLocations.find(location => location.state === state)?.count || 0;
-            return {
-                    fillColor: mapColor(eventLocation),
-                    weight: 2,
-                    opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.7
-            };
-        };
+    fetchGeoData();
+    fetchEventData();
+  }, [year]);
 
-            if (!geoJSON) {
-                return <div>Mapping Data...</div>;
-            }
+  const getColor = (state) => {
+    const event = eventData.find(e => e._id === state.properties.name.toUpperCase());
+    const count = event ? event.count : 0;
+    return count > 5000 ? '#800026' :
+           count > 3500 ? '#BD0026' :
+           count > 2000 ? '#E31A1C' :
+           count > 1000 ? '#FC4E2A' :
+           count > 500  ? '#FD8D3C' :
+           count > 200  ? '#FEB24C' :
+           count > 100  ? '#FED976' :
+           count > 50   ? '#FFEDA0' :
+                   '#FFEDA0';
+  };
 
-            return (
-                <MapContainer style={{ height: '600px', width: '100%' }} zoom={4} center={[37.8, -96]}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                    />
-                    <GeoJSON
-                        data={geoJSON}
-                        style={style}
-                    />
-                </MapContainer>
-            );
+  const style = (feature) => ({
+    fillColor: getColor(feature),
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7
+  });
+
+
+  return (
+    <div>
+        <MapContainer style={{ height: '50vh', width: '200%' }} zoom={3.5} center={[40, -20]}>
+            <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {geoData && <GeoJSON data={geoData} style={style} />}
+        </MapContainer>
+
+        {/* Color Legend Table */}
+        <table>
+            <thead>
+            <tr>
+                <th>Event Count</th>
+                <th>Color</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>5000+</td>
+                <td style={{ backgroundColor: '#800026' }}></td>
+            </tr>
+            <tr>
+                <td>3500 - 5000</td>
+                <td style={{ backgroundColor: '#BD0026' }}></td>
+            </tr>
+            <tr>
+                <td>2000 - 3500</td>
+                <td style={{ backgroundColor: '#E31A1C' }}></td>
+            </tr>
+            <tr>
+                <td>1000 - 2000</td>
+                <td style={{ backgroundColor: '#FC4E2A' }}></td>
+            </tr>
+            <tr>
+                <td>500 - 1000</td>
+                <td style={{ backgroundColor: '#FD8D3C' }}></td>
+            </tr>
+            <tr>
+                <td>200 - 500</td>
+                <td style={{ backgroundColor: '#FEB24C' }}></td>
+            </tr>
+            <tr>
+                <td>100 - 200</td>
+                <td style={{ backgroundColor: '#FED976' }}></td>
+            </tr>
+            <tr>
+                <td>50 - 100</td>
+                <td style={{ backgroundColor: '#FFEDA0' }}></td>
+            </tr>
+            <tr>
+                <td>0 - 50</td>
+                <td style={{ backgroundColor: '#FFEDA0' }}></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>State</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {eventData.map(event => (
+                    <tr key={event._id}>
+                        <td>{event._id}</td>
+                        <td>{event.count}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+  );
 };
 
 export default EventLocationChart;

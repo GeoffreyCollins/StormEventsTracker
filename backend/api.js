@@ -84,24 +84,26 @@ app.get('/api/fatalities', async (req, res) => {
 });
 
 app.get('/api/event-locations', async (req, res) => {
+    const year = parseInt(req.query.year, 10);
+    console.log('Received request with year:', year);
     try {
-        const eventsPerCounty = await EventLocationSchema.aggregate([
-            {
-                $group: {
-                    _id: "$CZ_NAME",
-                    count: {$sum: 1}
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    CZ_NAME: "$_id",
-                    count: 1
-                }
+        const eventsPerState = await EventLocationSchema.aggregate([
+        {
+            $match: {
+                YEAR: year,
             }
+        },
+        {
+            $group: {
+                _id: '$STATE',
+                count: { $sum: 1 }
+            }
+        }
         ]);
 
-        res.json(eventsPerCounty);
+        console.log('Event locations found:', eventsPerState.length);
+        console.log('Event locations:', eventsPerState);
+        res.json(eventsPerState);
     } catch (error) {
         console.error('Error fetching event locations:', error);
         res.status(500).json({ error: 'Internal Server Error' });

@@ -1,31 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import EventLocationChart from '../Charts/EventLocationChart';
-// import EventLocationList from '../Lists/EventLocationList';
-import { EventLocationContext } from '../../context/EventLocationContext';
 
 const EventLocationsPage = () => {
-    const { eventLocations, setEventLocations } = useContext(EventLocationContext);
-    const [ year, setYear ] = useState('');
+    const [year, setYear] = useState(2024); // Default year
+    const [yearValue, setYearValue] = useState('');
 
-    useEffect(() => {
-        const fetchEventLocations = async () => {
-            if (year) {
-                try {
-                    const response = await axios.get(`http://localhost:3001/api/event-locations?year=${year}`);
-                    setEventLocations(response.data);
-                } catch (error) {
-                    console.error('Error fetching location event data', error);
-                }
-            }
-        };
-
-        fetchEventLocations();
-    }, [year, setEventLocations]);
+    const handleYearChange = (e) => {
+        setYearValue(e.target.value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const yearValue = e.target.elements.year?.value;
         if (yearValue) {
             setYear(yearValue);
         } else {
@@ -34,24 +19,23 @@ const EventLocationsPage = () => {
     };
 
     return (
-        <EventLocationContext.Provider value={{ eventLocations }}>
             <div>
                 <h1>Storm Location Events</h1>
                 <form onSubmit={handleSubmit}>
                     <label>
                         Year:
-                        <input type='text' name="year" required />
+                        <input 
+                        type="text" 
+                        value={yearValue}
+                        onChange={handleYearChange}
+                        placeholder="Enter a year"
+                        />
                     </label>
-                    <button type='submit'>Get Data</button>
+                    <button type="submit">Get Data</button>
                 </form>
-                {eventLocations.length && (
-                    <div>
-                        <EventLocationChart />
-                        {/* <EventLocationList /> */}
-                    </div>
-                )}
+                <EventLocationChart year={year}/>
             </div>
-        </EventLocationContext.Provider>
-)};
+    );
+};
 
 export default EventLocationsPage;
