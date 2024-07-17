@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import L from 'leaflet';
 import '../../App.css';
 
 const EventLocationChart = ({ year }) => {
