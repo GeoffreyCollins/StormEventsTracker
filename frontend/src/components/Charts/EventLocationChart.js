@@ -51,7 +51,7 @@ const EventLocationChart = ({ year }) => {
 
   return (
     <div>
-        <MapContainer style={{ height: '50vh', width: '200%' }} zoom={3.5} center={[40, -20]}>
+        <MapContainer style={{ height: '50vh', width: '200%' }} zoom={3.5} center={[40, -35]}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />

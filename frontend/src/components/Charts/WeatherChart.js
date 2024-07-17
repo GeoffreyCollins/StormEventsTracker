@@ -31,6 +31,8 @@ const WeatherChart = () => {
           }],
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
@@ -45,7 +47,7 @@ const WeatherChart = () => {
     }
   }, [events]);
 
-  return <canvas ref={chartRef} />;
+  return <div style={{ width: '1350px', height: '500px'}}><canvas ref={chartRef} /></div>;
 };
 
 export default WeatherChart;

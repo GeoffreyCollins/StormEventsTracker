@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import WeatherChart from './Charts/WeatherChart';
 import EventTypeChart from './Charts/EventTypeChart';
+import EventPercentageChart from './Charts/EventPercentageChart';
 import { EventContext } from '../context/EventContext';
 
 const WeatherForm = () => {
@@ -32,8 +33,12 @@ const WeatherForm = () => {
         </label>
         <button type="submit">Get Storm Events</button>
       </form>
+      <h2>Total Amount of Storm Events by Type</h2>
       <EventTypeChart />
+      <h2>Amount of Events Per Month</h2>
       <WeatherChart />
+      <h2>Event Percentages</h2>
+      <EventPercentageChart />
     </div>
   );
 };
